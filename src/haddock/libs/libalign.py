@@ -31,34 +31,11 @@ from Bio.Seq import Seq
 from haddock import log
 from haddock.libs.libontology import PDBFile
 from haddock.libs.libpdb import split_by_chain
+from haddock.core.supported_molecules import supported_aminoacids_resnames, supported_nucleic_resnames
 
 
 RES_TO_BE_IGNORED = ["SHA", "WAT"]
 
-PROT_RES = [
-    "ALA",
-    "ARG",
-    "ASN",
-    "ASP",
-    "CYS",
-    "GLN",
-    "GLU",
-    "GLY",
-    "HIS",
-    "ILE",
-    "LEU",
-    "LYS",
-    "MET",
-    "PHE",
-    "PRO",
-    "SER",
-    "THR",
-    "TRP",
-    "TYR",
-    "VAL",
-    ]
-
-DNA_RES = ["DA", "DC", "DT", "DG"]
 # Backbone
 PROT_ATOMS = ["C", "N", "CA", "O"]
 # Bases
@@ -254,9 +231,9 @@ def get_atoms(pdb):
         dictionary of atoms
     """
     atom_dic = {}
-    atom_dic.update(dict((r, PROT_ATOMS) for r in PROT_RES))
-    atom_dic.update(dict((r, DNA_ATOMS) for r in DNA_RES))
-
+    atom_dic.update(dict((r, PROT_ATOMS) for r in supported_aminoacids_resnames))
+    atom_dic.update(dict((r, DNA_ATOMS) for r in supported_nucleic_resnames))
+    
     if isinstance(pdb, PDBFile):
         pdb = pdb.rel_path
 
@@ -267,8 +244,8 @@ def get_atoms(pdb):
                 atom_name = line[12:16].strip()
                 element = line[76:78].strip()
                 if (
-                        resname not in PROT_RES
-                        and resname not in DNA_RES
+                        resname not in supported_aminoacids_resnames
+                        and resname not in supported_nucleic_resnames
                         and resname not in RES_TO_BE_IGNORED
                         ):
                     # its neither DNA nor protein, use the heavy atoms
